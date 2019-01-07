@@ -6,7 +6,7 @@ class RegisterPage extends Component {
         return(
             <div>
                 <h1>Register a new user</h1>
-                <RegisterForm />
+                <RegisterForm onRegisterFormSubmit={this.props.onRegisterFormSubmit} />
             </div>
         );
     }
