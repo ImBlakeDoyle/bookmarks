@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./../styles/App.css";
 import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import BookmarksPage from "./pages/BookmarksPage";
@@ -36,6 +37,12 @@ class App extends Component {
         this.setState({ token }, cb);
     }
 
+    onLoginFormSubmit = (token, cb) => {
+        sessionStorage.setItem("token", token);
+        LocalApi.setAuthHeader(token);
+        this.setState({ token }, cb)
+    }
+
     render() {
         const { token } = this.state;
 
@@ -48,6 +55,9 @@ class App extends Component {
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/register" render={(props) => {
                             return <RegisterPage {...props} onRegisterFormSubmit={this.onRegisterFormSubmit} />
+                        }} />
+                        <Route exact path="/login" render={(props) => {
+                            return <LoginPage {...props} onLoginFormSubmit={this.onLoginFormSubmit} />
                         }} />
                         <PrivateRoute exact path="/bookmarks" token={token} component={BookmarksPage} />
                         <Route component={NotFoundPage} />
