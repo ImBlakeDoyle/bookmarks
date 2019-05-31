@@ -8,43 +8,17 @@ import NotFoundPage from "./pages/NotFoundPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import LocalApi from "./../apis/local";
 import PrivateRoute from "./PrivateRoute";
+import { connect } from "react-redux";
+import { removeAuthToken } from "./../actions";
 
 class App extends Component {
-    // state = { token: sessionStorage.getItem("token") }
-
-    constructor(props) {
-        super(props);
-        const token = sessionStorage.getItem("token");
-        this.state = { token };
-
-        if (token) {
-            LocalApi.setAuthHeader(token);
-        }
-
-        LocalApi.handleTokenError(() => {
-            this.logout();
-        })
-    }
 
     logout = () => {
-        sessionStorage.clear();
-        this.setState({ token: null});
-    }
-
-    onRegisterFormSubmit = (token, cb) => {
-        sessionStorage.setItem("token", token);
-        LocalApi.setAuthHeader(token);
-        this.setState({ token }, cb);
-    }
-
-    onLoginFormSubmit = (token, cb) => {
-        sessionStorage.setItem("token", token);
-        LocalApi.setAuthHeader(token);
-        this.setState({ token }, cb)
+        this.props.removeAuthToken();
     }
 
     render() {
-        const { token } = this.state;
+        const { token } = this.props;
 
         return (
             <BrowserRouter>
@@ -59,7 +33,7 @@ class App extends Component {
                         <Route exact path="/login" render={(props) => {
                             return <LoginPage {...props} onLoginFormSubmit={this.onLoginFormSubmit} />
                         }} />
-                        <PrivateRoute exact path="/bookmarks" token={token} component={BookmarksPage} />
+                        <PrivateRoute exact path="/bookmarks" component={BookmarksPage} />
                         <Route component={NotFoundPage} />
                     </Switch>
                 </div>
@@ -68,4 +42,10 @@ class App extends Component {
     }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        token: state.auth.token
+    };
+}
+
+export default connect(mapStateToProps, {removeAuthToken})(App);
